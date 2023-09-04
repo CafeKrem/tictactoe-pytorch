@@ -50,6 +50,27 @@ class CNNNet(FeedForward):
             nn.Linear(256, self.n_actions)
         )
 
+    def model_aure(self):
+        return nn.Sequential(
+            # convolution 1
+            # 3 channels -> `out_channels` different kernels/feature maps
+            nn.Conv2d(in_channels=3, out_channels=64, kernel_size=3, stride=1, padding=2),
+            nn.MaxPool2d(kernel_size=5, stride=1), # deformation invariance; subtle changes are captured
+            nn.ReLU(), # negative numbers -> 0
+            nn.Conv2d(in_channels=64, out_channels=128, kernel_size=3, stride=1, padding=2),
+            nn.ReLU(),
+            nn.MaxPool2d(kernel_size=5, stride=1),
+            nn.Conv2d(in_channels=128, out_channels=256, kernel_size=3, stride=1, padding=2),
+            nn.ReLU(),
+            nn.MaxPool2d(kernel_size=5, stride=1),
+            # deformation invariance; subtle changes are captured
+            # flatten
+            nn.Flatten(),
+            nn.Linear(256, 128),
+            nn.ReLU(),
+            nn.Linear(128, self.n_actions)
+        )
+
     def forward(self, x, mask=[]):
         # transfrom from one tensor of shape (9) into 3 tensors of shape (3,3) each
         empty = torch.zeros(x.size()).masked_scatter_((x == 0), torch.ones(x.size())).view(-1, 3, 3)

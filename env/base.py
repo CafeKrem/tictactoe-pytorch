@@ -40,6 +40,7 @@ class TicTacToeEnv(gym.Env):
         self.observation_space = spaces.Tuple(
             (spaces.Discrete(3),spaces.Discrete(3))
         )
+        self.observation_space = spaces.MultiDiscrete([[3 for i in range(9)]])
 
         # game
         self._board = tictactoe.Board(verbose=board_verbose)
@@ -141,7 +142,7 @@ class TicTacToeEnv(gym.Env):
 
     @property
     def observation_space_n(self):
-        return self.observation_space[0].n * self.observation_space[1].n
+        return self.observation_space.shape[0] * self.observation_space.shape[1]
 
     @property
     def action_space_n(self):
